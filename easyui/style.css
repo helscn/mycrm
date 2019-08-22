@@ -1,0 +1,230 @@
+body {
+    font-family:verdana,helvetica,arial,sans-serif;
+    padding:20px;
+    font-size:12px;
+    margin:0;
+}
+.footer{
+    text-align:center;
+    height:35px;
+}
+.footer div{
+    margin-top:10px;
+}
+.frm input{
+    border: 1px solid #ccc;
+    padding: 7px 0px;
+    border-radius: 3px;
+    padding-left:5px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+}
+.frm input:focus{
+    border-color: #66afe9;
+    outline: 0;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+}
+#frm_add td{
+    margin:5px 10px;
+    padding: 5px;
+}
+
+#frm_config td{
+    height:45px;
+}
+
+.my_msg_list{
+    position: relative;
+    margin: 10px;
+    background-color: #fff;
+    padding: 16px 16px;
+    -webkit-box-shadow: 0 2px 4px 0 rgba(0,0,0,0.28);
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.28);
+	min-height: 100px;
+    box-sizing: border-box;
+}
+
+.my_msg_list_title{
+    width: 100%;
+    margin: 0;
+	padding-bottom: 15px;
+    font-size: 16px;
+	font-weight:bold;
+    color: #3d3d3d;
+    margin-bottom: 8px;
+    display: block;
+    overflow: hidden;
+    box-sizing: border-box;
+	border-bottom: 3px solid #e0e0e0;
+}
+.msg_right{
+    float: right!important;
+    display: inline-block;
+    color: #4a90e2;
+	margin-top: 0px;
+}
+
+.msg_list{
+    padding: 0 0 0 15px;
+    min-height: 370px;
+    box-sizing: border-box;
+}
+.msg_list_ul{
+    font-size: 14px;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+}
+.msg_list_ul_li{
+    position: relative;
+	margin:0px 0px;
+    padding: 10px 0px 10px 0px;
+    border-bottom: 1px solid #e0e0e0;
+	list-style: none;
+}
+
+.msg_list_ul_li a{
+    color:#4d4d4d;
+	text-decoration:none;
+}
+
+.msg_type_receive{
+    display: inline-block;
+    height: 20px;
+    line-height: 18px;
+    padding: 0 10px;
+    color: #4d4d4d;
+    font-size: 12px;
+    text-align: center;
+    background-color: #fdd;
+    border: 1px solid #e0e0e0;
+	border-radius:5px;
+    vertical-align: top;
+}
+
+.msg_type_sendto{
+    display: inline-block;
+    height: 20px;
+    line-height: 18px;
+    padding: 0 10px;
+    color: #4d4d4d;
+    font-size: 12px;
+    text-align: center;
+    background-color: #dfd;
+    border: 1px solid #e0e0e0;
+	border-radius:5px;
+    vertical-align: top;
+}
+
+.msg_type_comment{
+    display: inline-block;
+    height: 20px;
+    line-height: 18px;
+    padding: 0 10px;
+    color: #4d4d4d;
+    font-size: 12px;
+    text-align: center;
+    background-color: #ddf;
+    border: 1px solid #e0e0e0;
+	border-radius:5px;
+    vertical-align: top;
+}
+
+.msg_type_system{
+    display: inline-block;
+    height: 20px;
+    line-height: 18px;
+    padding: 0 10px;
+    color: #4d4d4d;
+    font-size: 12px;
+    text-align: center;
+    background-color: #fcc;
+    border: 1px solid #e0e0e0;
+	border-radius:5px;
+    vertical-align: top;
+}
+
+.msg_info_box{
+    width: 65%;
+    color: #4d4d4d;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+.msg_title{
+    display: inline-block;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+	font-weight:bold;
+}
+
+.msg_content{
+	clear:both;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    font-size: 12px;
+    color: #4d4d4d;
+    line-height: 22px;
+	border-radius:5px;
+	max-height:100px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	transition: max-height 0.5s ease-in;
+}
+
+.msg_content:hover{
+	max-height:250px;
+	overflow-y: scroll;
+}
+
+.msg_title input{
+	width:100%;
+	border-bottom:2px solid #ccc;
+	border-top:0px;
+	border-left:0px;
+	border-right:0px
+}
+
+.msg_comment{
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f5f5ff;
+    font-size: 14px;
+    color: #4d4d4d;
+    line-height: 22px;
+	border-radius:5px;
+}
+
+.msg_comment textarea{
+	width:100%;
+	min-height:40px;
+	border:0px;
+	background-color: #f5f5ff;
+}
+
+.msg_comment textarea:focus{
+	height:120px;
+}
+
+.page-box{
+    width: 100%;
+    margin: 24px 0 20px;
+    text-align: center;
+    border-top-color: initial;
+    border-right-color: initial;
+    border-bottom-color: initial;
+    border-left-color: initial;
+}
+ 

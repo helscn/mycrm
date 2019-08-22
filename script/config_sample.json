@@ -1,0 +1,22 @@
+{
+    "db": {
+        "user": "root",
+        "db": "my_crm",
+        "host": "localhost",
+        "port": 3306,
+        "passwd": "root",
+        "charset": "utf8"
+    },
+    "mailbox": {
+        "exclude": [
+            "\"Drafts\"",
+            "\"Templates\""
+        ],
+        "address": "admin@mailbox.com",
+        "outbox": [
+            "\"Sent Messages\"",
+            "\"Sent\""
+        ],
+        "admin": "AdminName"
+    }
+}
