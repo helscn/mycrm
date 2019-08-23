@@ -7,7 +7,7 @@ $onlyValid = isset($_REQUEST['onlyValid']) ? strval($_REQUEST['onlyValid']) : 'f
 $type = isset($_REQUEST['type']) ? strval($_REQUEST['type']) : 'json';
 
 if($onlyValid=='true'){
-	$onlyValid='and valid=1';
+	$onlyValid='and valid>=1';
 }else{
 	$onlyValid='';
 }

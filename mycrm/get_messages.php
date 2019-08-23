@@ -65,11 +65,5 @@ EOF;
 EOF;
         echo $msg;
     }
-    // echo '
-    //     </ul>
-    //     <div class="page-box">
-    //     </div>
-    // </div>
-    // ';
 }
 mysqli_close($conn);

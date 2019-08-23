@@ -16,14 +16,9 @@
 本项目由于没有包含用户权限控制及用户登陆认证，不适合放在公网主机空间使用。
 
 ## 下一步工作计划:
-- ~~在前端界面修改邮箱地址时，将所有messages表中的旧邮箱地址替换为新地址~~
-- ~~后台将messages的receivers收件人拆分到独立的表中，以便建立索引提高邮件消息的查询速度~~
-- ~~在客户管理记录表中增加工具栏功能按钮：添加当前联系人的备注笔记，笔记支持富文本格式~~
-- ~~获取邮箱邮件时，递归获取所有非草稿箱的邮件~~
-- 增加客户、邮件的统计记录表，参考[Ajax渲染](https://www.cnblogs.com/luxh/archive/2012/11/03/2752658.html) ,按时间统计功能参考[此教程](https://blog.csdn.net/lz_peter/article/details/78722976) 。
-- 把待确认地址valid改为2:✔❌❓
-- 星级、有效性、时间统计
-8/23：删除无用的demo文件
+
+- 增加客户、邮件的统计记录表，参考[Ajax渲染](https://www.cnblogs.com/luxh/archive/2012/11/03/2752658.html) ,按时间统计功能参考[此教程](https://blog.csdn.net/lz_peter/article/details/78722976) 
+- 客户评级、有效性统计
 
 ------
 
@@ -210,7 +205,7 @@ readme.md                               // README帮助说明文件
 |comment|varchar(512)|自定义的备注信息|
 |last_contact_date|datetime|最近一次联系客户的时间，由后台程序自动更新|
 |last_checked_date|datetime|上次检查邮件地址有效性的时间，由 `verify_mail.py` 脚本自动更新|
-|valid|tinyint unsigned|客户邮件是否是否有效，值为0或1|
+|valid|tinyint unsigned|客户邮箱是否有效，由 `verify_mail.py` 脚本自动更新，值为0代表无效地址，1代表有效地址，2代表脚本还未进行检查|
 
 ### <span id="db_messages">messages 表</span>
 

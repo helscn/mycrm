@@ -13,12 +13,12 @@ if ($type=='all'){
     $sql="SELECT * FROM customers 
         WHERE(datediff(CURRENT_TIMESTAMP,last_contact_date)>$followup_days
             OR last_contact_date is NULL) 
-            AND valid=1 
+            AND valid>=1 
             AND importance $followup_importance_operators $followup_importance
             AND ( company=''
                 OR company IN (
                     SELECT company FROM customers
-                    WHERE valid=1
+                    WHERE valid>=1
                     GROUP BY company 
                     HAVING 
                         datediff(CURRENT_TIMESTAMP,MAX(last_contact_date))>$followup_days OR
@@ -26,7 +26,7 @@ if ($type=='all'){
                 )
         )";
 } elseif ($type=='valid'){
-    $sql="SELECT * FROM customers WHERE valid=1 and last_checked_date is not null";
+    $sql="SELECT * FROM customers WHERE valid>=1 and last_checked_date is not null";
 } elseif ($type=='invalid'){
     $sql="SELECT * FROM customers WHERE valid=0";
 } else {

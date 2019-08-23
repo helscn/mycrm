@@ -12,7 +12,7 @@ $phone = mysqli_escape_string($conn,$_REQUEST['phone']);
 $website = mysqli_escape_string($conn,$_REQUEST['website']);
 $last_contact_date= mysqli_escape_string($conn,$_REQUEST['last_contact_date']);
 $comment = mysqli_escape_string($conn,$_REQUEST['comment']);
-$valid = isset($_REQUEST['valid']) ? intval($_REQUEST['valid']) : 1;
+$valid = isset($_REQUEST['valid']) ? intval($_REQUEST['valid']) : 2;
 
 $sql = "insert into customers(name,email,importance,company,country,address,phone,website,comment,valid) values ('$name','$email',$importance,'$company','$country','$address','$phone','$website','$comment',$valid)";
 $result=mysqli_query($conn,$sql);

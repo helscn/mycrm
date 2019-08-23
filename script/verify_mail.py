@@ -110,7 +110,7 @@ try:
         
     with DataBase(**config['db']) as cursor:
         logger.debug('正在从服务器获取待检查的邮箱列表...')
-        sql='SELECT email FROM customers WHERE valid=1 ORDER BY last_checked_date ASC LIMIT 5 OFFSET 0'
+        sql='SELECT email FROM customers WHERE valid>=1 ORDER BY last_checked_date ASC LIMIT 5 OFFSET 0'
         #sql='SELECT email FROM customers ORDER BY last_checked_date ASC LIMIT 5 OFFSET 0'
         cursor.execute(sql)
         results=cursor.fetchall()

@@ -37,9 +37,9 @@
 				},
 				bool: {
 					validator: function(value,param){
-						return /^[10]$/.test(value);
+						return /^[012]$/.test(value);
 					},
-					message: '输入0或1的半角数字，0代表❌，1代表✅'
+					message: '输入0-2的半角数字，0代表❌，1代表✅，2代表❓'
 				},
 				positiveInt: {
 					validator: function(value,param){
@@ -124,7 +124,7 @@
 			$("#menu_help").menu({ 
             	onClick: function (item) { 
                 	if (item.text=="关于..."){
-						$.messager.alert('关于','My CRM客户关系管理系统作者为 <a href="https://github.com/helscn" target="my_crm_author">helscn</a>，当前仍处于产品基础原型阶段，使用了<a href="https://jquery.com" target="jquery">jQuery</a>、<a href="http://www.jeasyui.net" target="easyui">easyUI</a>开源框架进行项目开发，遵循<a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="GPLv3">GPLv3许可证协议</a>发布。');
+						$.messager.alert('关于','My CRM客户关系管理系统作者为 <a href="https://github.com/helscn/mycrm" target="my_crm_author">helscn</a>，当前仍处于产品基础原型阶段，使用了<a href="https://jquery.com" target="jquery">jQuery</a>、<a href="http://www.jeasyui.net" target="easyui">easyUI</a>开源框架进行项目开发，遵循<a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="GPLv3">GPLv3许可证协议</a>发布。');
 					}else if(item.text=="帮助"){
 						if ($('#main_tabs').tabs('exists', item.text)){
 							$('#main_tabs').tabs('select', item.text);
@@ -170,7 +170,11 @@
 				},
 				rowStyler: function(index,row){
 					if (row.valid=='0'){
-						return 'color:#f00;'
+						return 'color:#f00;text-decoration:line-through;';
+					}else if (row.valid=='1'){
+						return 'color:#000;';
+					}else if(row.valid=='2'){
+						return 'text-decoration:underline;';
 					}
 				}
 			});
@@ -188,6 +192,15 @@
 				onSelect: function (index,row){
 					update_msg(row['email']);
 				},
+				rowStyler: function(index,row){
+					if (row.valid=='0'){
+						return 'color:#f00;text-decoration:line-through;';
+					}else if (row.valid=='1'){
+						return 'color:#000;';
+					}else if(row.valid=='2'){
+						return 'text-decoration:underline;';
+					}
+				}
 			});
 
 			// 初始化待跟进客户评级的比较符选择
@@ -370,8 +383,15 @@
 
 		// 格式化布尔值，显示为✅和❌
 		function formatBool(val,row){
-			if (!val && typeof(val)!="undefined" && val!=0){return '';}
-			return val=='0'?'❌':'✅';
+			if (val=='0'){
+				return '❌';
+			}else if(val=='1'){
+				return '✅';
+			}else if(val=='2'){
+				return '❓';
+			}else{
+				return '';
+			}
 		};
 		
 		function formatComment(val){

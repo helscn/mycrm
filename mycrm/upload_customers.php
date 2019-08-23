@@ -78,7 +78,7 @@ while(($data = fgetcsv($handle)) !== FALSE)
         $row['valid']=intval($row['valid']);
         $vals.=",valid={$row['valid']}";
     }else{
-        $row['valid']=1;    //valid默认为1
+        $row['valid']=2;    //valid默认为2
     }
 
     preg_match_all( "/[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,})/i",$row['email'], $matches);
