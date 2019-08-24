@@ -22,7 +22,8 @@
 	<script type="text/javascript" src="easyui/jquery.edatagrid.js"></script>
 	<script type="text/javascript" src="easyui/plugins/texteditor/jquery.texteditor.js"></script>
 	<script type="text/javascript" src="easyui/locale/easyui-lang-zh_CN.js" charset="utf-8"></script>
-	<script type="text/javascript" src="easyui/marked.min.js"></script>
+	<script type="text/javascript" src="js/highcharts.js"></script>
+	<script type="text/javascript" src="js/marked.min.js"></script>
 	
 	<script type="text/javascript">
 		// UI初始化及事件绑定
@@ -49,6 +50,86 @@
 				}
 			});
 
+			// 绑定Tabs的点击事件
+			$("#main_tabs").tabs({
+				onSelect:function(title){
+					if(title=='数据统计'){
+						// 更新客户统计表
+						$.getJSON(
+							"mycrm/data_summary.php?type=importance",
+							function(data){
+								Highcharts.chart('chart_importance', {
+									chart: {
+										type: 'bar'
+									},
+									title: {
+										text: '客户统计'
+									},
+									xAxis: {
+										categories: ['🌚', '⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐','⭐⭐⭐⭐⭐'],
+										title: null
+									},
+									yAxis: {
+										min: 0,
+										title: null
+									},
+									tooltip: {
+										valueSuffix: ''
+									},
+									plotOptions: {
+										bar: {
+											dataLabels: {
+												enabled: true
+											}
+										}
+									},
+									credits: {
+										enabled: false
+									},
+									series: data
+								});
+							}
+						);
+
+						// 更新邮件消息统计表
+						$.getJSON(
+							"mycrm/data_summary.php?type=messages",
+							function(data){
+								Highcharts.chart('chart_messages', {
+									chart: {
+										type: 'column'
+									},
+									title: {
+										text: '邮件消息统计'
+									},
+									xAxis: {
+										categories: data['categories'],
+										title: null
+									},
+									yAxis: {
+										min: 0,
+										title: null
+									},
+									tooltip: {
+										valueSuffix: ''
+									},
+									plotOptions: {
+										column: {
+											dataLabels: {
+												enabled: true
+											}
+										}
+									},
+									credits: {
+										enabled: false
+									},
+									series: data['series']
+								});
+							}
+						);
+					}
+				}
+			});
 
 			// 绑定数据管理菜单的点击事件
 			$("#menu_db").menu({ 
@@ -652,6 +733,11 @@
 				</table>
 			</div>
 			
+			<div title="数据统计" data-options="iconCls:'icon-chart'" style="padding:10px">
+				<div id="chart_importance" style="min-width: 310px; max-width: 900px; height: 300px; margin: 0 auto"></div>
+				<hr style="border:1px dashed gray">
+				<div id="chart_messages" style="min-width: 310px; max-width: 900px; height: 300px; margin: 0 auto"></div>
+			</div>
 		</div>
 
 		<!--富文本编辑器对话框-->
