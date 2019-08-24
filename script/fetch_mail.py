@@ -103,7 +103,13 @@ class IMAP_Client():
         self.__folder = 'INBOX'
 
     def search(self, pattern='ALL', folder=None):
-        conn = self.connect()
+        try:
+            conn = self.connect()
+        except Exception as e:
+            logger.error('连接邮件服务器出现错误，正在重试...')
+            conn.logout()
+            conn = self.connect()
+
         if folder:
             self.__folder = folder
         if self.__folder:
@@ -113,7 +119,13 @@ class IMAP_Client():
         return data[0].split()
 
     def del_emails(self, uids):
-        conn = self.connect()
+        try:
+            conn = self.connect()
+        except Exception as e:
+            logger.error('连接邮件服务器出现错误，正在重试...')
+            conn.logout()
+            conn = self.connect()
+
         if self.__folder:
             conn.select(mailbox=self.__folder)
         if type(uids) not in (list, tuple):
@@ -135,7 +147,13 @@ class IMAP_Client():
             self.__folder = folder
 
     def get_emails(self, uids, parts='(RFC822)'):
-        conn = self.connect()
+        try:
+            conn = self.connect()
+        except Exception as e:
+            logger.error('连接邮件服务器出现错误，正在重试...')
+            conn.logout()
+            conn = self.connect()
+            
         if type(uids) not in (list, tuple, set):
             try:
                 typ, data = conn.fetch(uids, parts)
@@ -164,8 +182,15 @@ class IMAP_Client():
         conn.logout()
 
     def get_recent_emails(self,days=30,parts='(RFC822)'):
-        conn = self.connect()
-        typ, data = conn.search(None, 'ALL')
+        try:
+            conn = self.connect()
+            typ, data = conn.search(None, 'ALL')
+        except Exception as e:
+            logger.error('连接邮件服务器出现错误，正在重试...')
+            conn.logout()
+            conn = self.connect()
+            typ, data = conn.search(None, 'ALL')
+            
         uids=data[0].split()
         uids.reverse()
         now=datetime.now().replace(tzinfo=self.timezone)
