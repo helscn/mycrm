@@ -74,10 +74,12 @@
 										title: null
 									},
 									tooltip: {
-										valueSuffix: ''
+										headerFormat: '<b>{point.x}</b><br/>',
+										pointFormat: '{series.name}: {point.y}<br/>总共: {point.stackTotal}'
 									},
 									plotOptions: {
 										bar: {
+											stacking: 'normal',
 											dataLabels: {
 												enabled: true
 											}
@@ -205,7 +207,7 @@
 			$("#menu_help").menu({ 
             	onClick: function (item) { 
                 	if (item.text=="关于..."){
-						$.messager.alert('关于','My CRM客户关系管理系统作者为 <a href="https://github.com/helscn/mycrm" target="my_crm_author">helscn</a>，当前仍处于产品基础原型阶段，使用了<a href="https://jquery.com" target="jquery">jQuery</a>、<a href="http://www.jeasyui.net" target="easyui">easyUI</a>开源框架进行项目开发，遵循<a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="GPLv3">GPLv3许可证协议</a>发布。');
+						$.messager.alert('关于','My CRM客户关系管理系统作者为 <a href="https://github.com/helscn/mycrm" target="my_crm_author">helscn</a>，当前仍处于产品基础原型阶段，使用了<a href="https://jquery.com" target="jquery">jQuery</a>、<a href="http://www.jeasyui.net" target="easyui">easyUI</a>和<a href="https://www.highcharts.com">Highcharts</a>开源库进行项目开发，遵循<a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="GPLv3">GPLv3许可证协议</a>发布。');
 					}else if(item.text=="帮助"){
 						if ($('#main_tabs').tabs('exists', item.text)){
 							$('#main_tabs').tabs('select', item.text);
