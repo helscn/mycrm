@@ -34,7 +34,6 @@ config={
     "mailbox":{
         "admin": "AdminName",
         "address": "admin@mailbox.com",
-        "outbox":['"Sent Messages"', '"Sent"'],
         "exclude":['"Drafts"','"Templates"']
     }
 }

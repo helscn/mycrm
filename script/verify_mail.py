@@ -122,8 +122,14 @@ try:
                 resp=requests.get(r'https://verify-email.org/home/verify-as-guest/{0}'.format(email),timeout=30)
                 if 'response' in resp.json():
                     logger.info('邮箱 %s 检查结果：%s',email,re.sub(r'\r|\n','',resp.json()['response']['log']))
+                    if resp.json()['response']['log']=='Success':
+                        status=1    # 有效的邮箱地址
+                    elif resp.json()['response']['log']=='ServerIsCatchAll':
+                        status=2    # 无法确认有效性的邮箱地址
+                    else:
+                        status=0    # 无效的邮箱地址
                     records.append((
-                        1 if resp.json()['response']['log']=='Success' else 0,
+                        status,
                         datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
                         email
                     ))

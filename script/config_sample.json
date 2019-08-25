@@ -13,10 +13,6 @@
             "\"Templates\""
         ],
         "address": "admin@mailbox.com",
-        "outbox": [
-            "\"Sent Messages\"",
-            "\"Sent\""
-        ],
         "admin": "AdminName"
     }
 }
