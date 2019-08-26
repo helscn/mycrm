@@ -360,7 +360,11 @@
 
 		//打开右侧侧栏并显示系统消息
 		function show_msg(){
-			$('#main_app').layout('expand','east');
+			if($('#message_layout').panel('options')['collapsed']){
+				$('#main_app').layout('expand','east');
+			}else{
+				$('#main_app').layout('collapse','east');
+			}
 		}
 
 		//更新客户来往邮件消息的分页及显示内容
@@ -632,10 +636,10 @@
 					<div data-options="name:'comment'">备注</div>
 				</div>
 				<input id="searchValue" class="easyui-searchbox" style="width:300px"
-					data-options="searcher:update_dg,prompt:'请输入要筛选的值',menu:'#searchType'">
-				</input>
+					data-options="searcher:update_dg,prompt:'请输入要筛选的值',menu:'#searchType'" />
+
 				<span style="margin-left:40px;">只显示有效记录：</span>
-				<input id="onlyValid" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'" checked>
+				<input id="onlyValid" class="easyui-switchbutton" data-options="onText:'Yes',offText:'No'" checked />
 				</div>
 				<!--分隔线-->
 				<!--<hr style="border:1px dashed gray">-->
@@ -885,7 +889,7 @@
 	</div>
 	
 	<!--右边侧栏显示的来往消息列表-->
-    <div id="message_layout" data-options="region:'east',title:'消息',iconCls:'icon-message',split:true,collapsed:true,expandMode:'float'" style="width:500px">
+    <div id="message_layout" data-options="region:'east',title:'消息',iconCls:'icon-message',split:true,collapsible:true,collapsed:true,expandMode:'float',width:'500px'">
 		<div class="easyui-layout" data-options="fit:true">
 			<div data-options="region:'north'">
 				<div id="msg_pp" class="easyui-pagination"></div>

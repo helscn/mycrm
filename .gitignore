@@ -1,6 +1,7 @@
 # Config file
 conn.php
 config.json
+index.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
