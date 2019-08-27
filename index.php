@@ -668,7 +668,8 @@
 							<th field="phone" width="120px" sortable="true" editor="text">电话</th>
 							<th field="website" width="60px" sortable="true" editor="text">网站</th>
 							<th field="comment" width="120px" sortable="true" formatter="formatComment">备注</th>
-							<th field="last_contact_date" width="120px" sortable="true" >最近联系时间</th>
+							<th field="last_contact_date" width="120px" sortable="true">最近联系时间</th>
+							<th field="last_checked_log" width="120px" sortable="true" editor="text">邮箱检查结果</th>
 							<th field="valid" width="50px" sortable="true" align="center" editor="{type:'validatebox',options:{required:true,validType:'bool'}}" data-options="formatter:formatBool">有效性</th>
 						</tr>
 					</thead>
@@ -733,6 +734,7 @@
 							<th field="website" width="60px" sortable="true" editor="text">网站</th>
 							<th field="comment" width="120px" sortable="true" editor="text" data-options="formatter:formatComment">备注</th>
 							<th field="last_contact_date" width="120px" sortable="true">最近联系时间</th>
+							<th field="last_checked_log" width="120px" sortable="true" editor="text">邮箱检查结果</th>
 							<th field="valid" width="50px" sortable="true" align="center" editor="{type:'validatebox',options:{required:true,validType:'bool'}}" data-options="formatter:formatBool">有效性</th>
 						</tr>
 					</thead>
