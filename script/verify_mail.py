@@ -110,8 +110,7 @@ try:
         
     with DataBase(**config['db']) as cursor:
         logger.debug('正在从服务器获取待检查的邮箱列表...')
-        sql='SELECT email FROM customers WHERE valid>=1 ORDER BY last_checked_date ASC LIMIT 5 OFFSET 0'
-        #sql='SELECT email FROM customers ORDER BY last_checked_date ASC LIMIT 5 OFFSET 0'
+        sql="SELECT email FROM customers WHERE valid>=1 ORDER BY last_checked_date ASC LIMIT 5 OFFSET 0"
         cursor.execute(sql)
         results=cursor.fetchall()
         records=[]
@@ -121,39 +120,42 @@ try:
             try:
                 resp=requests.get(r'https://verify-email.org/home/verify-as-guest/{0}'.format(email),timeout=30)
                 if 'response' in resp.json():
-                    logger.info('邮箱 %s 检查结果：%s',email,re.sub(r'\r|\n','',resp.json()['response']['log']))
-                    if resp.json()['response']['log']=='Success':
-                        status=1    # 有效的邮箱地址
-                    elif resp.json()['response']['log']=='ServerIsCatchAll':
-                        status=2    # 无法确认有效性的邮箱地址
+                    now=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    log=resp.json()['response']['log'].replace('\r',' ').replace('\n',' ').strip()
+                    logger.info('邮箱 %s 检查结果：%s',email,log)
+                    if log=='Success':
+                        # 有效的邮箱地址
+                        sql="UPDATE customers SET valid=%s,last_checked_date=%s,last_checked_log=%s WHERE email=%s"
+                        data=(1,now,log,email)
+                    elif ('NotExist' in log) or ('not exist' in log):
+                        # 无效的邮箱地址
+                        sql="UPDATE customers SET valid=%s,last_checked_date=%s,last_checked_log=%s WHERE email=%s"
+                        data=(0,now,log,email)
                     else:
-                        status=0    # 无效的邮箱地址
-                    records.append((
-                        status,
-                        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                        email
-                    ))
+                        # 无法确认有效性的邮箱地址，不更新有效性
+                        sql="UPDATE customers SET last_checked_date=%s,last_checked_log=%s WHERE email=%s"
+                        data=(now,log,email)
+                    records.append({'sql':sql,'data':data})
                 else:
                     logger.error('verify-email网站拒绝了邮箱检查服务：{0}'.format(resp.text))
                     break
             except Exception as e:
                 logger.error('检查邮箱 %s 时出现网络错误: %s',email,e)
+
         if records:
             # 更新邮箱地址验证结果
             logger.debug('正在将邮箱有效性结果写入数据库...')
-            sql="UPDATE customers SET valid=%s,last_checked_date=%s WHERE email=%s"
-            cursor.executemany(sql,records)
-
+            for record in records:
+                cursor.execute(record['sql'],record['data'])
             # 更新mail_checked_date配置项为当前时间
             logger.debug('正在将本次程序检查时间写入数据库...')
-            sql="UPDATE config SET value='{0}' WHERE parameter='mail_checked_date'".format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-            cursor.execute(sql)
+            update_sql="UPDATE config SET value='{0}' WHERE parameter='mail_checked_date'".format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+            cursor.execute(update_sql)
+
     logger.debug('程序执行完毕！')
+
 except Exception as e:
     logger.error('程序运行错误: %s',e)
     logger.critical('程序异常停止!',exc_info=True)
     sys.stderr.write(str(e)+'\n')
     raise e
-
-
-        
