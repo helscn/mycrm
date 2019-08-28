@@ -372,7 +372,7 @@ class Email():
         charset = msg.get_charset()
         if charset is None:
             content_type = msg.get('Content-Type', '')
-            result=re.findall(r'(charset\s*=\s*)([a-z0-9\-]+)',content_type,re.I | re.M | re.S)
+            result=re.findall(r'(charset\s*=\s*)"?([a-z0-9\-]+)"?',content_type,re.I | re.M | re.S)
             if result:
                 charset = result[0][1]
         return charset
@@ -480,8 +480,8 @@ def save_message(cursor,email,msg_type):
         content=re.sub(r'(\r\n)|\r|\n',r'<br>',content,flags=re.M | re.S | re.I)
     if subject=='来自dtn-tech.com的退信':
         # 如果邮件为QQ企业邮退信邮件，将邮件正文中的退信地址加至receivers中
-        logger.info('找到邮件服务器在 %s 退回的邮件，退信地址: %s',date,reject_addrs[0])
         reject_addrs = re.findall(r'[a-z_0-9.-]{1,64}@(?:[a-z0-9-]{1,200}.){1,5}[a-z]{1,6}', content,flags=re.M | re.S | re.I)
+        logger.info('找到邮件服务器在 %s 退回的邮件，退信地址: %s',date,reject_addrs[0])
         addrs.append(reject_addrs[0])
         msg_type='system'
     elif name==config['mailbox']['admin']:
