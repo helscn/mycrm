@@ -12,6 +12,7 @@ $address = mysqli_escape_string($conn,$_REQUEST['address']);
 $phone = mysqli_escape_string($conn,$_REQUEST['phone']);
 $website = mysqli_escape_string($conn,$_REQUEST['website']);
 $last_contact_date = mysqli_escape_string($conn,$_REQUEST['last_contact_date']);
+$last_checked_log = mysqli_escape_string($conn,$_REQUEST['last_checked_log']);
 $comment = mysqli_escape_string($conn,$_REQUEST['comment']);
 $valid = intval($_REQUEST['valid']);
 
@@ -29,7 +30,7 @@ if($row = mysqli_fetch_row($rs)){
 }
 
 // 修改 customers 表中的客户记录
-$sql = "UPDATE customers SET name='$name',email='$email',importance=$importance,company='$company',country='$country',address='$address',phone='$phone',website='$website',comment='$comment',valid=$valid WHERE id=$id";
+$sql = "UPDATE customers SET name='$name',email='$email',importance=$importance,company='$company',country='$country',address='$address',phone='$phone',website='$website',comment='$comment',last_checked_log='$last_checked_log',valid=$valid WHERE id=$id";
 mysqli_query($conn,$sql);
 echo json_encode(array(
 	'id' => $id,
@@ -42,6 +43,7 @@ echo json_encode(array(
 	'phone' => stripslashes($phone),
 	'website' => stripslashes($website),
 	'last_contact_date' => $last_contact_date,
+	'last_checked_log' => $last_checked_log,
 	'comment' => stripslashes($comment),
 	'valid' => $valid
 ));
