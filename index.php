@@ -318,6 +318,36 @@
 				}
 			});
 
+			// 初始化产品清单列表的绑定事件,双击产品记录显示产品描述明细内容
+			$('#dg_products').datagrid({
+				onDblClickRow:function(rowIndex, rowData){
+					$('#dlg_product').dialog({title:'['+rowData['categories']+'] '+rowData['title']});
+					$('#product_description').texteditor({toolbar:[]});
+					$('#product_description').texteditor('setValue',rowData['description']);
+					$('#product_description').texteditor('readonly',true);
+					$('#dlg_product').dialog('open');
+				}
+			});
+
+            //更新参数配置中的当前设定值
+            $.getJSON("mycrm/get_config.php",function(result){
+                $.each(result, function(i, para){
+					if(para.parameter=='followup_importance_operators'){
+						$('#followup_importance_operators').combobox('setValue',para.value);
+					}else if(para.parameter=='followup_importance'){
+						$('#followup_importance').combobox('setValue',para.value);
+					}else if(para.parameter=='followup_days'){
+						$('#followup_days').slider('setValue',para.value);
+					}else{
+                    	$("#frm_config [name='"+para.parameter+"']").val(para.value);
+					}
+                });
+				$('#frm_config').form('validate');
+
+				//更新显示产品明细
+				searchProducts();
+            });
+
 			// 初始化批量客户上传文件框
 			$('#csv_file').filebox({
 				buttonText: '选择文件',
@@ -325,22 +355,6 @@
 				accept: 'text/csv'
 			});
             
-            //更新参数配置中的当前设定值
-            $.getJSON("mycrm/get_config.php",function(result){
-                $.each(result, function(i, para){
-					if(para.parameter=='followup_importance_operators'){
-						$('#followup_importance_operators').combobox('setValue',result['followup_importance_operators']);
-					}else if(para.parameter=='followup_importance'){
-						$('#followup_importance').combobox('setValue',result['followup_importance']);
-					}else if(para.parameter=='followup_days'){
-						$('#followup_days').slider('settValue',result['followup_days']);
-					}else{
-                    	$("#frm_config [name='"+para.parameter+"']").val(para.value);
-					}
-                });
-				$('#frm_config').form('validate');
-            });
-
             //更新客户记录表
 			update_dg();
 			update_dg_followup();
@@ -348,6 +362,8 @@
 			//显示系统消息
 			update_msg('');
 			show_msg();
+
+
 		});
 
 
@@ -455,7 +471,82 @@
 			onlyValid = $('#onlyValid').switchbutton('options')['checked']
 			window.open('mycrm/get_customer.php?type=csv&searchType='+searchType+'&searchValue='+searchValue+'&onlyValid='+onlyValid);
 		}
+
+		// 刷新显示产品列表
+		function showProducts(page=1){
+			value=$('#productSearcher').searchbox('getValue');
+			wc_api=$('#woocommerce_api').val();
+			$('#dg_products').datagrid('loading');
+			data=getQueryData('refreshProducts');
+			data['page']=page;
+			$.ajax({
+				url: 'https://'+wc_api+'@www.dtn-tech.com/wc-api/v3/products',
+				type: 'GET',
+				dataType: "jsonp",
+				data: data,
+				error: function(xhr,status,error){
+				}
+			});
+		}
+
+		// 显示产品列表的回调函数
+		function refreshProducts(result){
+			products=[]
+			$.each(result.products,function(index,product){
+				product['categories']=product['categories'].join(',');
+			});
+			$('#dg_products').datagrid('loadData',result.products);
+			$('#dg_products').datagrid('loaded');
+		}
 		
+		// 刷新显示产品列表的分页信息
+		function showProductsPagination(page=1){
+			value=$('#productSearcher').searchbox('getValue');
+			wc_api=$('#woocommerce_api').val();
+			$('#productsPagination').pagination('loading');
+			data=getQueryData('refreshProductsPagination');
+
+			$.ajax({
+				url: 'https://'+wc_api+'@www.dtn-tech.com/wc-api/v3/products/count',
+				type: 'GET',
+				dataType: "jsonp",
+				data: data,
+				error: function(xhr,status,error){
+				}
+			});
+		}
+	
+		// 刷新产品列表分页信息的回调函数
+		function refreshProductsPagination(result){
+			$('#productsPagination').pagination({
+				total:result.count,
+				onSelectPage: function(page,rows){
+					showProducts(page);
+				}
+			});
+			$('#productsPagination').pagination('loaded');
+		}
+		
+		// 根据产品搜索栏中的关键词搜索产品
+		function searchProducts(value){
+			showProductsPagination();
+			showProducts();
+		}
+		
+		// 根据产品搜索栏中的关键词及回调函数名生产Ajax请求数据
+		function getQueryData(callback){
+			data={
+				'_jsonp':callback,
+				'filter[limit]': $('#productsPagination').pagination('options')['pageSize']
+			};
+			if($('#productSearcher').searchbox('getName')=='title'){
+				data['filter[q]']=encodeURIComponent(value);
+			}else if($('#productSearcher').searchbox('getName')=='sku'){
+				data['filter[sku]']=encodeURIComponent(value);
+			}
+			return data;
+		}
+
 		//HTML标签转义（< -> &lt;）
 		function html2Escape(sHtml) {
 			return sHtml.replace(/(\r\n)|[\r\n<>&"]/g,function(c){
@@ -481,9 +572,42 @@
 			}
 		};
 		
+		// 格式化HTML备注消息，显示为纯文本内容
 		function formatComment(val){
 			val=$('<div>'+val+'</div>').text();
 			return val.replace(/\r|\n/g,' ')
+		}
+
+		// 格式化超链接显示
+		function formatLink(val,row){
+			return '<a href="'+val+'" target="_blank">链接</a>';
+		}
+
+		// 格式化图片链接，转换为img标签显示
+		function formatImg(val,row){
+			if(val){
+				return '<img style="max-height:50px;max-width:80px;" src="'+val+'" />';
+			}else{
+				return '无';
+			}
+		}
+
+		// 格式化价格显示，增加美元符号并保留两位小数
+		function formatPrice(val,row){
+			if(val){
+				return '$'+parseFloat(val).toFixed(2);
+			}else{
+				return '---';
+			}
+		}
+
+		// 格式化日期时间，删除其中的字母
+		function formatDateTime(val,row){
+			if(val){
+				return val.replace('T',' ').replace('Z',' ');
+			}else{
+				return '';
+			}
 		}
 
 		// 打开增加客户记录的输入表单
@@ -741,11 +865,47 @@
 				</table>
 			</div>
 			
+			<!--数据统计图表显示Tab-->
 			<div title="数据统计" data-options="iconCls:'icon-chart'" style="padding:10px">
 				<div id="chart_importance" style="min-width: 310px; max-width: 900px; height: 300px; margin: 0 auto"></div>
 				<hr style="border:1px dashed gray">
 				<div id="chart_messages" style="min-width: 310px; max-width: 900px; height: 300px; margin: 0 auto"></div>
 			</div>
+
+			<!--产品列表的显示Tab-->
+			<div title="我的产品" data-options="iconCls:'icon-product'" style="padding:10px">
+				<div style="margin:10px 20px;"><input id="productSearcher" class="easyui-searchbox"  data-options="searcher:searchProducts,prompt:'请输入要筛选的产品',menu:'#productSearchType'" style="width:300px" data-options="searcher:searchProducts"></input></div>
+				<div id="productSearchType" style="width:120px">
+					<div data-options="name:'title'">产品名称</div>
+					<div data-options="name:'sku'">SKU</div>
+				</div>
+				<table id="dg_products" title="产品明细" class="easyui-datagrid" idField="id" pagination=false
+					rownumbers="true" fitColumns=true singleSelect=true>
+					<thead>
+						<tr>
+							<th data-options="field:'featured_src',align:'center',formatter:formatImg,width:2">图片</th>
+							<th data-options="field:'sku',width:2">SKU</th>
+							<th data-options="field:'title',width:5">名称</th>
+							<th data-options="field:'categories',width:5">分类</th>
+							<th data-options="field:'price',align:'right',formatter:formatPrice,width:2">价格</th>
+							<th data-options="field:'regular_price',align:'right',formatter:formatPrice,width:2">正常价格</th>
+							<th data-options="field:'sale_price',align:'right',formatter:formatPrice,width:2">销售价格</th>
+							<th data-options="field:'short_description',width:2">简短描述</th>
+							<th data-options="field:'description',formatter:formatComment,width:4">描述</th>
+							<th data-options="field:'updated_at',wdith:4,formatter:formatDateTime">更新日期</th>
+							<th data-options="field:'permalink',align:'center',formatter:formatLink,width:1">链接</th>
+						</tr>
+					</thead>
+				</table>
+				<div id="productsPagination" class="easyui-pagination" style="background:#efefef;border:1px solid #ccc;"
+					data-options="total:0,pageSize:10">
+				</div>
+			</div>
+		</div>
+
+		<!--显示产品介绍明细的对话框-->
+		<div id="dlg_product" title="备注" align="center" class="easyui-dialog" iconCls="icon-property" modal=true style="padding:0px;height:500px; width:750px;" closed=true resizable=true>
+			<div id="product_description" class="easyui-texteditor" style="width:100%;height:100%;margin:0px;padding:0px"></div>
 		</div>
 
 		<!--富文本编辑器对话框-->
@@ -825,6 +985,7 @@
 						</td>
 					</tr>
 				</table>
+				<input id="woocommerce_api" name="woocommerce_api" type="hidden" value="" />
 			</form>
 		</div>
 		
@@ -886,8 +1047,6 @@
 			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_upload()">确定</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_upload').dialog('close')">取消</a>
 		</div>
-
-
 	</div>
 	
 	<!--右边侧栏显示的来往消息列表-->
@@ -895,7 +1054,7 @@
 		<div class="easyui-layout" data-options="fit:true">
 			<div data-options="region:'north'">
 				<div id="msg_pp" class="easyui-pagination"></div>
-				<input id="msg_address" type='hidden' value="None"></input>
+				<input id="msg_address" type="hidden" value="None" />
 			</div>
 
 			<div data-options="region:'center'" >
