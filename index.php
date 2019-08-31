@@ -830,8 +830,6 @@
 					</tr>
 				</table>
 				</div>
-				<!--分隔线-->
-				<!--<hr style="border:1px dashed gray">-->
 
 				<!--待跟进的客户列表工具栏-->
 				<div id="toolbar_followup">
@@ -879,8 +877,16 @@
 					<div data-options="name:'title'">产品名称</div>
 					<div data-options="name:'sku'">SKU</div>
 				</div>
+
+				<!--我的产品工具栏-->
+				<div id="toolbar_products">
+						<a href="#" class="easyui-linkbutton" iconCls="icon-product" plain="true"  onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/post-new.php?post_type=product')">增加产品</a>
+						<a href="#" class="easyui-linkbutton" iconCls="icon-theme" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/media-new.php')">上传图片</a>
+						<a href="#" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/edit.php?post_type=product&page=product_importer')">批量导入产品</a>
+						<a href="#" class="easyui-linkbutton" iconCls="icon-csv" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/edit.php?post_type=product&page=product_exporter')">批量导出产品</a>
+				</div>
 				<table id="dg_products" title="产品明细" class="easyui-datagrid" idField="id" pagination=false
-					rownumbers="true" fitColumns=true singleSelect=true>
+					toolbar="#toolbar_products" rownumbers="true" fitColumns=true singleSelect=true>
 					<thead>
 						<tr>
 							<th data-options="field:'featured_src',align:'center',formatter:formatImg,width:2">图片</th>
@@ -902,7 +908,30 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	
+	<!--右边侧栏显示的来往消息列表-->
+    <div id="message_layout" data-options="region:'east',title:'消息',iconCls:'icon-message',split:true,collapsible:true,collapsed:true,expandMode:'float',width:'500px'">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="region:'north'">
+				<div id="msg_pp" class="easyui-pagination"></div>
+				<input id="msg_address" type="hidden" value="None" />
+			</div>
 
+			<div data-options="region:'center'" >
+				<!--显示的客户来往邮件内容-->
+				<div id="message_list" class="easyui-panel" style="width:100%;" data-options="href:'mycrm/get_messages.php'"></div>
+			</div>
+		</div>
+	</div>
+
+	<!--底部版权信息-->
+	<div class="footer" data-options="region:'south'">
+		<div>Copyright © 2014-2019 Datton Technology Co.,LTD.  All Rights Reserved. </div>
+	</div>
+
+	<!--对话框组件-->
+	<div>
 		<!--显示产品介绍明细的对话框-->
 		<div id="dlg_product" title="备注" align="center" class="easyui-dialog" iconCls="icon-property" modal=true style="padding:0px;height:500px; width:750px;" closed=true resizable=true>
 			<div id="product_description" class="easyui-texteditor" style="width:100%;height:100%;margin:0px;padding:0px"></div>
@@ -913,11 +942,12 @@
 			<input id="edit_grid" type="hidden" value=""></input>
 			<div id="rich_texteditor" class="easyui-texteditor" style="width:100%;height:100%;padding:20px">
 			</div>
-		</div>
-		<!--富文本编辑器对话框底部按钮-->
-		<div id="dlg_texteditor_buttons">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:save_comment();">确定</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_texteditor').dialog('close')">取消</a>
+
+			<!--富文本编辑器对话框底部按钮-->
+			<div id="dlg_texteditor_buttons">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:save_comment();">确定</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_texteditor').dialog('close')">取消</a>
+			</div>
 		</div>
 
 		<!--参数设置对话框-->
@@ -987,14 +1017,14 @@
 				</table>
 				<input id="woocommerce_api" name="woocommerce_api" type="hidden" value="" />
 			</form>
+
+			<!--参数设置的对话框底部按钮-->
+			<div id="dlg_config_buttons">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_config();">确定</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_config').dialog('close')">取消</a>
+			</div>
 		</div>
 		
-		<!--参数设置的对话框底部按钮-->
-		<div id="dlg_config_buttons">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_config();">确定</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_config').dialog('close')">取消</a>
-		</div>
-
 		<!--增加客户的对话框界面-->
 		<div id="dlg_add_customer" iconCls="icon-add" class="easyui-dialog" style="padding:5px;width:520px;height:350px;" title="增加客户" closed=true resizable=true buttons="#dlg_add_customer_buttons">
 			<form id="frm_add_customer" class="frm" method="post">
@@ -1029,11 +1059,12 @@
 					</tr>
 				</table>
 			</form>
-		</div>
-        <!--增加客户的对话框底部按钮-->
-		<div id="dlg_add_customer_buttons">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_add_customer();">确定</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_add_customer').dialog('close')">取消</a>
+
+			<!--增加客户的对话框底部按钮-->
+			<div id="dlg_add_customer_buttons">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_add_customer();">确定</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_add_customer').dialog('close')">取消</a>
+			</div>
 		</div>
 
 		<!--批量上传客户记录对话框-->
@@ -1041,32 +1072,13 @@
 			<form id="frm_upload" class="frm" method="post" enctype="multipart/form-data">
 				<div><input id="csv_file" name="csv_file" type="text" style="width:350px;"></div>
 			</form>
-		</div>
-		<!--批量上传客户记录对话框底部按钮-->
-		<div id="dlg_upload_buttons">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_upload()">确定</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_upload').dialog('close')">取消</a>
-		</div>
-	</div>
-	
-	<!--右边侧栏显示的来往消息列表-->
-    <div id="message_layout" data-options="region:'east',title:'消息',iconCls:'icon-message',split:true,collapsible:true,collapsed:true,expandMode:'float',width:'500px'">
-		<div class="easyui-layout" data-options="fit:true">
-			<div data-options="region:'north'">
-				<div id="msg_pp" class="easyui-pagination"></div>
-				<input id="msg_address" type="hidden" value="None" />
-			</div>
 
-			<div data-options="region:'center'" >
-				<!--显示的客户来往邮件内容-->
-				<div id="message_list" class="easyui-panel" style="width:100%;" data-options="href:'mycrm/get_messages.php'"></div>
+			<!--批量上传客户记录对话框底部按钮-->
+			<div id="dlg_upload_buttons">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:submit_upload()">确定</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg_upload').dialog('close')">取消</a>
 			</div>
 		</div>
-	</div>
-
-	<!--底部版权信息-->
-	<div class="footer" data-options="region:'south'">
-		<div>Copyright © 2014-2019 Datton Technology Co.,LTD.  All Rights Reserved. </div>
 	</div>
 </body>
 </html>
