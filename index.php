@@ -170,7 +170,6 @@
 								});
 							}});
 						}
-						//window.open("script/verify_mail.log");
 					}else if(item.text=="邮箱近期邮件的监控日志"){
 						title="邮箱监控日志";
 						if ($('#main_tabs').tabs('exists', title)){
@@ -212,7 +211,6 @@
 						if ($('#main_tabs').tabs('exists', item.text)){
 							$('#main_tabs').tabs('select', item.text);
 						} else {
-							//content = '<iframe scrolling="auto" frameborder="0"  src="README.html" style="width:100%;height:100%;"></iframe>';
 							$.ajax({url:"README.md",success:function(result){
 								$('#main_tabs').tabs('add',{
 									title:item.text,
@@ -318,14 +316,10 @@
 				}
 			});
 
-			// 初始化产品清单列表的绑定事件,双击产品记录显示产品描述明细内容
+			// 初始化产品清单列表的绑定事件,双击产品记录打开网上商店中的产品页面
 			$('#dg_products').datagrid({
 				onDblClickRow:function(rowIndex, rowData){
-					$('#dlg_product').dialog({title:'['+rowData['categories']+'] '+rowData['title']});
-					$('#product_description').texteditor({toolbar:[]});
-					$('#product_description').texteditor('setValue',rowData['description']);
-					$('#product_description').texteditor('readonly',true);
-					$('#dlg_product').dialog('open');
+					window.open(rowData['permalink']);
 				}
 			});
 
@@ -362,7 +356,6 @@
 			//显示系统消息
 			update_msg('');
 			show_msg();
-
 
 		});
 
@@ -422,6 +415,19 @@
 				},
 				'json'
 			);
+		}
+
+		// 打开备注消息
+		function show_product_description(){
+			var index = $('#dg_products').datagrid('getRowIndex', $('#dg_products').datagrid('getSelected'));
+			var row=$('#dg_products').datagrid('getSelected')
+			if(row){
+				$('#dlg_product').dialog({title:'['+row['categories']+'] '+row['title']});
+				$('#product_description').texteditor({toolbar:[]});
+				$('#product_description').texteditor('setValue',row['description']);
+				$('#product_description').texteditor('readonly',true);
+				$('#dlg_product').dialog('open');
+			}
 		}
 
 		// 打开富文本编辑器
@@ -571,11 +577,11 @@
 				return '';
 			}
 		};
-		
+
 		// 格式化HTML备注消息，显示为纯文本内容
 		function formatComment(val){
 			val=$('<div>'+val+'</div>').text();
-			return val.replace(/\r|\n/g,' ')
+			return html2Escape(val.replace(/\r|\n/g,' '));
 		}
 
 		// 格式化超链接显示
@@ -872,7 +878,7 @@
 
 			<!--产品列表的显示Tab-->
 			<div title="我的产品" data-options="iconCls:'icon-product'" style="padding:10px">
-				<div style="margin:10px 20px;"><input id="productSearcher" class="easyui-searchbox"  data-options="searcher:searchProducts,prompt:'请输入要筛选的产品',menu:'#productSearchType'" style="width:300px" data-options="searcher:searchProducts"></input></div>
+				<div style="margin:10px 20px;"><input id="productSearcher" class="easyui-searchbox"  data-options="searcher:searchProducts,prompt:'请输入筛选条件，SKU必须输入全名',menu:'#productSearchType'" style="width:350px" ></input></div>
 				<div id="productSearchType" style="width:120px">
 					<div data-options="name:'title'">产品名称</div>
 					<div data-options="name:'sku'">SKU</div>
@@ -882,8 +888,9 @@
 				<div id="toolbar_products">
 						<a href="#" class="easyui-linkbutton" iconCls="icon-product" plain="true"  onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/post-new.php?post_type=product')">增加产品</a>
 						<a href="#" class="easyui-linkbutton" iconCls="icon-theme" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/media-new.php')">上传图片</a>
-						<a href="#" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/edit.php?post_type=product&page=product_importer')">批量导入产品</a>
+						<a href="#" class="easyui-linkbutton" iconCls="icon-upload" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/edit.php?post_type=product&page=product_importer')">批量上传产品</a>
 						<a href="#" class="easyui-linkbutton" iconCls="icon-csv" plain="true" onclick="javascript:window.open('https://www.dtn-tech.com/wp-admin/edit.php?post_type=product&page=product_exporter')">批量导出产品</a>
+						<a href="#" class="easyui-linkbutton" iconCls="icon-property" plain="true" onclick="javascript:show_product_description();">查看产品详细描述</a>
 				</div>
 				<table id="dg_products" title="产品明细" class="easyui-datagrid" idField="id" pagination=false
 					toolbar="#toolbar_products" rownumbers="true" fitColumns=true singleSelect=true>
@@ -891,15 +898,13 @@
 						<tr>
 							<th data-options="field:'featured_src',align:'center',formatter:formatImg,width:2">图片</th>
 							<th data-options="field:'sku',width:2">SKU</th>
-							<th data-options="field:'title',width:5">名称</th>
+							<th data-options="field:'title',width:7">名称</th>
 							<th data-options="field:'categories',width:5">分类</th>
 							<th data-options="field:'price',align:'right',formatter:formatPrice,width:2">价格</th>
 							<th data-options="field:'regular_price',align:'right',formatter:formatPrice,width:2">正常价格</th>
 							<th data-options="field:'sale_price',align:'right',formatter:formatPrice,width:2">销售价格</th>
-							<th data-options="field:'short_description',width:2">简短描述</th>
-							<th data-options="field:'description',formatter:formatComment,width:4">描述</th>
-							<th data-options="field:'updated_at',wdith:4,formatter:formatDateTime">更新日期</th>
-							<th data-options="field:'permalink',align:'center',formatter:formatLink,width:1">链接</th>
+							<th data-options="field:'short_description',formatter:formatComment,width:5">简短描述</th>
+							<th data-options="field:'updated_at',wdith:5,formatter:formatDateTime">更新日期</th>
 						</tr>
 					</thead>
 				</table>
