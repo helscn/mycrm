@@ -5,7 +5,7 @@
  * @headlist 第一行,列名
  * @fileName 输出Excel文件名
  */
-function csv_export($data = array(), $headlist = array(), $fileName) {
+function csv_export($data = array(), $headlist = array(), $fileName, $encode='utf-8') {
 
     header('Content-Type: text/csv');
     header('Content-Disposition: attachment;filename="'.$fileName.'.csv"');
@@ -17,7 +17,11 @@ function csv_export($data = array(), $headlist = array(), $fileName) {
     //输出Excel列名信息
     foreach ($headlist as $key => $value) {
         //CSV的Excel支持GBK编码，一定要转换，否则乱码
-        $headlist[$key] = iconv('utf-8', 'gbk', $value);
+        if ($encode=='utf-8' or $encode=='utf8'){
+            $headlist[$key] = $value;
+        }else{
+            $headlist[$key] = iconv('utf-8', $encode, $value);
+        }
     }
 
     //将数据通过fputcsv写到文件句柄
@@ -44,7 +48,12 @@ function csv_export($data = array(), $headlist = array(), $fileName) {
 
         $row = $data[$i];
         foreach ($row as $key => $value) {
-            $row[$key] = iconv('utf-8', 'gbk', $value);
+            $row[$key] = $value;
+            if ($encode=='utf-8' or $encode=='utf8'){
+                $row[$key] = $value;
+            }else{
+                $row[$key] = iconv('utf-8', $encode, $value);
+            }
         }
 
         fputcsv($fp, $row);

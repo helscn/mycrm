@@ -76,7 +76,7 @@ if($type=='json'){
         'Valid'
 	);
 	include 'functions.php';
-	csv_export($items, $headerlist, "export_filtered");
+	csv_export($items, $headerlist, "export_filtered",'utf-8');
 }
 mysqli_close($conn);
 ?>
