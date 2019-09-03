@@ -12,7 +12,10 @@ function csv_export($data = array(), $headlist = array(), $fileName, $encode='ut
     header('Cache-Control: max-age=0');
 
     //打开PHP文件句柄,php://output 表示直接输出到浏览器
-    $fp = fopen('php://output', 'a');// 打开文件资源，不存在则创建
+    $fp = fopen('php://output', 'a');                  // 打开文件资源，不存在则创建
+    if ($encode=='utf-8' or $encode=='utf8'){
+        fwrite($fp,chr(0xEF).chr(0xBB).chr(0xBF));     // 输出BOM头，避免在Excel中乱码
+    }
 
     //输出Excel列名信息
     foreach ($headlist as $key => $value) {

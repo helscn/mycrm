@@ -6,7 +6,7 @@ $type = isset($_REQUEST['type']) ? strval($_REQUEST['type']) : 'all';
 $followup_days=get_config($conn,'followup_days');
 $followup_importance_operators=get_config($conn,'followup_importance_operators');
 $followup_importance=get_config($conn,'followup_importance');
-$encode='gbk';
+$encode='utf-8';
 
 if ($type=='all'){
     $sql="SELECT * FROM customers";
@@ -26,7 +26,6 @@ if ($type=='all'){
                         MAX(last_contact_date) is NULL
                 )
         )";
-    $encode='utf-8';
 } elseif ($type=='valid'){
     $sql="SELECT * FROM customers WHERE valid>=1 and last_checked_date is not null";
 } elseif ($type=='invalid'){
