@@ -30,7 +30,8 @@ while(($data = fgetcsv($handle)) !== FALSE)
     $row = array();
     foreach ($csv_header as $k => $v)
     {
-        $row[$v] = mysqli_escape_string($conn,trim(iconv('gbk','utf-8', ltrim($data[$k], '`'))));
+        //$row[$v] = mysqli_escape_string($conn,trim(iconv('gbk','utf-8', ltrim($data[$k], '`'))));
+        $row[$v] = mysqli_escape_string($conn,trim($data[$k]));
     }
 
     $vals='';

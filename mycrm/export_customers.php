@@ -30,30 +30,34 @@ if ($type=='all'){
     $sql="SELECT * FROM customers WHERE valid>=1 and last_checked_date is not null";
 } elseif ($type=='invalid'){
     $sql="SELECT * FROM customers WHERE valid=0";
+} elseif ($type=='template'){
+    $sql=false;
 } else {
     die("Unknow export type.");
 }
 
 $items = array();
-$rs = mysqli_query($conn,$sql); 
-while($row = mysqli_fetch_object($rs)){
-    array_push($items,
-        array(
-            (!$row->name and $type=='followup') ? 'Sir' : $row->name,
-            $row->email,
-            $row->importance,
-            $row->company,
-            $row->country,
-            $row->address,
-            $row->phone,
-            $row->website,
-            $row->comment,
-            $row->last_contact_date,
-            $row->valid
-        )
-    );
+if($sql){
+    $rs = mysqli_query($conn,$sql); 
+    while($row = mysqli_fetch_object($rs)){
+        array_push($items,
+            array(
+                (!$row->name and $type=='followup') ? 'Sir' : $row->name,
+                $row->email,
+                $row->importance,
+                $row->company,
+                $row->country,
+                $row->address,
+                $row->phone,
+                $row->website,
+                $row->comment,
+                $row->last_contact_date,
+                $row->valid
+            )
+        );
+    }
+    mysqli_close($conn);
 }
-mysqli_close($conn);
 if ($type=='followup'){
     $headerlist=array(
         'Name',

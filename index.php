@@ -144,6 +144,8 @@
 						window.open("mycrm/export_customers.php?type=invalid");
 					}else if(item.text=="导出待跟进客户记录"){
 						window.open("mycrm/export_customers.php?type=followup");
+					}else if(item.text=="下载批量上传模板"){
+						window.open("mycrm/export_customers.php?type=template");
 					}else if(item.text=="批量上传客户记录"){
 						$('#dlg_upload').dialog('open');
 					}
@@ -715,6 +717,7 @@
 			<div iconCls="icon-csv">导出无效客户记录</div>
 			<div iconCls="icon-csv">导出待跟进客户记录</div>
 			<div class="menu-sep"></div>
+			<div iconCls="icon-csv">下载批量上传模板</div>
 			<div iconCls="icon-upload">批量上传客户记录</div>
 		</div>
 		<div id="menu_log" style="width:180px;">
