@@ -6,10 +6,23 @@ $searchValue = isset($_REQUEST['searchValue']) ? strval($_REQUEST['searchValue']
 $onlyValid = isset($_REQUEST['onlyValid']) ? strval($_REQUEST['onlyValid']) : 'false';
 $type = isset($_REQUEST['type']) ? strval($_REQUEST['type']) : 'json';
 
+// 是否只显示有效数据或待确认数据
 if($onlyValid=='true'){
 	$onlyValid='and valid>=1';
 }else{
 	$onlyValid='';
+}
+
+// 在搜索值前后增加%以实现模糊查找
+if($searchValue != '%'){
+	$searchValue='%' . $searchValue . '%';
+	$searchValue=str_replace('%%','%',$searchValue);
+}
+
+// 如果筛选类型为名字、公司名或地址时，去除比较字符串中的空格
+if($searchType=='name' or $searchType=='company' or $searchType=='address'){
+	$searchType="replace($searchType,' ','')";
+	$searchValue=str_replace(' ','',$searchValue);
 }
 if($searchType=='importance' and preg_match("/\d/",$searchValue)){
 	$searchValue=str_replace('%','',$searchValue);

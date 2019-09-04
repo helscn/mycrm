@@ -449,7 +449,7 @@
 			$('#dg').edatagrid({
 				queryParams: {
 					searchType: $('#searchValue').searchbox('getName'),
-					searchValue: !value?'%':value+'%',
+					searchValue: !value?'%':value,
 					onlyValid: $('#onlyValid').switchbutton('options')['checked']
 				}
 			});
