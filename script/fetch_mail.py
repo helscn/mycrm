@@ -403,8 +403,10 @@ class Email():
                 if content_type == 'text/plain':
                     content = part.get_payload(decode=True)
                     charset = self.__guess_charset(part)
+                    if charset == 'ansi':
+                        charset='utf8'
                     try:
-                        content = content.decode(charset or 'utf8',errors='ignore')
+                        content = content.decode(charset or 'utf8', errors='ignore')
                     except Exception as e:
                         print(charset,':',repr(content))
                     text += content
