@@ -181,12 +181,14 @@ class IMAP_Client():
         conn.logout()
 
     def get_recent_emails(self,days=30,parts='(RFC822)'):
+        conn=None
         try:
             conn = self.connect()
             typ, data = conn.search(None, 'ALL')
         except Exception as e:
             logger.error('连接邮件服务器出现错误，正在重试...')
-            conn.logout()
+            if conn:
+                conn.logout()
             conn = self.connect()
             typ, data = conn.search(None, 'ALL')
             
