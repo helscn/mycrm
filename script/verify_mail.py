@@ -157,5 +157,5 @@ try:
 except Exception as e:
     logger.error('程序运行错误: %s',e)
     logger.critical('程序异常停止!',exc_info=True)
-    sys.stderr.write(str(e)+'\n')
+    sys.stderr.write('程序运行错误：'+str(e)+'\n')
     raise e

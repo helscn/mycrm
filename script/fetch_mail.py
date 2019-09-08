@@ -15,6 +15,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.image import MIMEImage
 from datetime import datetime, timezone, timedelta
+import codecs
 import re
 import time
 import logging
@@ -181,14 +182,12 @@ class IMAP_Client():
         conn.logout()
 
     def get_recent_emails(self,days=30,parts='(RFC822)'):
-        conn=None
+        conn = self.connect()
         try:
-            conn = self.connect()
             typ, data = conn.search(None, 'ALL')
         except Exception as e:
-            logger.error('连接邮件服务器出现错误，正在重试...')
-            if conn:
-                conn.logout()
+            logger.error('获取邮件服务器数据出现错误，正在重试...')
+            conn.logout()
             conn = self.connect()
             typ, data = conn.search(None, 'ALL')
             
@@ -223,21 +222,24 @@ class IMAP_Client():
         return folders
 
     def connect(self):
-        Max_Retry_Count = 10
+        Max_Retry_Count = 3
         Retry_Delay = 10
         retry_count = 0
         while True:
-            if self.ssl:
-                conn = imaplib.IMAP4_SSL(host=self.host, port=self.port)
-            else:
-                conn = imaplib.IMAP4(host=self.host, port=self.port)
+            conn=None
             try:
+                if self.ssl:
+                    conn = imaplib.IMAP4_SSL(host=self.host, port=self.port)
+                else:
+                    conn = imaplib.IMAP4(host=self.host, port=self.port)
                 conn.login(user=self.user, password=self.password)
                 conn.select(mailbox=self.__folder)
             except Exception as e:
-                conn.logout()
+                if hasattr(conn,"logout"):
+                    conn.logout()
                 retry_count += 1
                 if retry_count > Max_Retry_Count:
+                    sys.stderr.write('经过多次尝试，仍无法连接邮件服务器，程序异常停止！\n')
                     raise e
                 time.sleep(Retry_Delay)
                 logger.error('连接IMAP服务器失败，正在尝试第 %s 次重新连接...',retry_count)
@@ -299,8 +301,11 @@ class Email():
         for header in headers:
             if type(header[0]) is bytes:
                 code = header[1]
-                if (not code) or ('unknown' in code):
-                    code = 'utf-8'
+                try:
+                    codecs.lookup(code)
+                except LookupError as e:
+                    logger.error('无法获取邮件编码或未知的编码格式：%s，使用默认的utf-8进行解码!',code)
+                    code='utf-8'
                 data += header[0].decode(encoding=code, errors='ignore')
             else:
                 data += header[0]
@@ -377,6 +382,11 @@ class Email():
             result=re.findall(r'(charset\s*=\s*)"?([a-z0-9\-]+)"?',content_type,re.I | re.M | re.S)
             if result:
                 charset = result[0][1]
+        try:
+            codecs.lookup(charset);
+        except LookupError as e:
+            logger.error('无法获取邮件编码或未知的编码格式：%s，使用默认的utf-8进行解码!',charset)
+            charset='utf-8'
         return charset
 
     def get_html_message(self, msg=None):
@@ -567,5 +577,5 @@ if __name__ == '__main__':
     except Exception as e:
         logger.error('程序运行错误: %s',e)
         logger.critical('程序异常停止!',exc_info=True)
-        sys.stderr.write(str(e)+'\n')
+        sys.stderr.write('程序运行错误：'+str(e)+'\n')
         raise e
