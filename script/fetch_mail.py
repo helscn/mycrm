@@ -362,6 +362,8 @@ class Email():
         s=date_str.split()
         if re.search(r'Mon|Tue|Wed|Thu|Fri|Sat|Sun',s[0]):
             s=s[1:]
+        if s[4].upper()=="GMT":
+            s[4]='+0000'
         try:
             date = datetime.strptime(' '.join(s[:5]), '%d %b %Y %H:%M:%S %z')
         except Exception as e:
