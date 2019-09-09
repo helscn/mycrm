@@ -157,7 +157,7 @@
 				onClick: function (item) { 
                 	if (item.text=="系统通知消息"){
 						update_msg('');
-						show_msg();
+						$('#main_app').layout('expand','east');
 					}else if(item.text=="客户邮箱有效性检查日志"){
 						title="邮箱有效性检查日志";
 						if ($('#main_tabs').tabs('exists', title)){
