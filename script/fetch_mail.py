@@ -103,12 +103,7 @@ class IMAP_Client():
         self.__folder = 'INBOX'
 
     def search(self, pattern='ALL', folder=None):
-        try:
-            conn = self.connect()
-        except Exception as e:
-            logger.error('连接邮件服务器出现错误，正在重试...')
-            conn.logout()
-            conn = self.connect()
+        conn = self.connect()
 
         if folder:
             self.__folder = folder
@@ -119,12 +114,7 @@ class IMAP_Client():
         return data[0].split()
 
     def del_emails(self, uids):
-        try:
-            conn = self.connect()
-        except Exception as e:
-            logger.error('连接邮件服务器出现错误，正在重试...')
-            conn.logout()
-            conn = self.connect()
+        conn = self.connect()
 
         if self.__folder:
             conn.select(mailbox=self.__folder)
@@ -147,12 +137,7 @@ class IMAP_Client():
             self.__folder = folder
 
     def get_emails(self, uids, parts='(RFC822)'):
-        try:
-            conn = self.connect()
-        except Exception as e:
-            logger.error('连接邮件服务器出现错误，正在重试...')
-            conn.logout()
-            conn = self.connect()
+        conn = self.connect()
             
         if type(uids) not in (list, tuple, set):
             try:
@@ -217,7 +202,13 @@ class IMAP_Client():
 
     def list_folders(self, directory='""', pattern='*'):
         conn = self.connect()
-        folders = conn.list(directory=directory, pattern=pattern)
+        try:
+            folders = conn.list(directory=directory, pattern=pattern)
+        except Exception as e:
+            logger.error('获取邮件服务器邮箱目录出现错误，正在重试...')
+            conn.logout()
+            conn = self.connect()
+            folders = conn.list(directory=directory, pattern=pattern)
         conn.logout()
         return folders
 
@@ -239,7 +230,7 @@ class IMAP_Client():
                     conn.logout()
                 retry_count += 1
                 if retry_count > Max_Retry_Count:
-                    sys.stderr.write('经过多次尝试，仍无法连接邮件服务器，程序异常停止！\n')
+                    sys.stderr.write('Can not connect to the mail server: {0}\n'.format(self.host))
                     raise e
                 time.sleep(Retry_Delay)
                 logger.error('连接IMAP服务器失败，正在尝试第 %s 次重新连接...',retry_count)
@@ -303,7 +294,7 @@ class Email():
                 code = header[1]
                 try:
                     codecs.lookup(code)
-                except LookupError as e:
+                except (LookupError,TypeError) as e:
                     logger.error('无法获取邮件编码或未知的编码格式：%s，使用默认的utf-8进行解码!',code)
                     code='utf-8'
                 data += header[0].decode(encoding=code, errors='ignore')
@@ -386,7 +377,7 @@ class Email():
                 charset = result[0][1]
         try:
             codecs.lookup(charset);
-        except LookupError as e:
+        except (LookupError,TypeError) as e:
             logger.error('无法获取邮件编码或未知的编码格式：%s，使用默认的utf-8进行解码!',charset)
             charset='utf-8'
         return charset
@@ -579,5 +570,5 @@ if __name__ == '__main__':
     except Exception as e:
         logger.error('程序运行错误: %s',e)
         logger.critical('程序异常停止!',exc_info=True)
-        sys.stderr.write('程序运行错误：'+str(e)+'\n')
+        sys.stderr.write(str(e)+'\n')
         raise e
