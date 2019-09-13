@@ -4,7 +4,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<meta name="keywords" content="web,crm">
 	<meta name="description" content="一个简单的CRM管理系统，为老婆独家定制！">
-    <title>CRM System</title>
+    <title>MyCRM System</title>
     <?php
         include 'mycrm/conn.php';
 		$sql="SELECT value from config where parameter='theme'";
@@ -14,6 +14,8 @@
 		$theme=$row->{'value'};
         echo '<link rel="stylesheet" type="text/css" href="easyui/themes/'.$theme.'/easyui.css">';
     ?>
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="bookmark" href="/favicon.ico" type="image/x-icon"　/>	
 	<link rel="stylesheet" type="text/css" href="easyui/themes/icon.css">
 	<link rel="stylesheet" type="text/css" href="easyui/plugins/texteditor/texteditor.css">
 	<link rel="stylesheet" type="text/css" href="easyui/style.css">
@@ -702,7 +704,7 @@
 
 </head>
 <body id="main_app" class="easyui-layout" data-options="fit:true">
-	<div data-options="region:'north',title:'CRM管理系统',collapsible:false" style="height:65px;">
+	<div data-options="region:'north',title:'MyCRM管理系统',collapsible:false" style="height:65px;">
 		<!--顶部菜单项-->
 		<div id="menubar" style="text-align:right;padding:0px;height:30px;width:100%;border:1px solid #ccc">
 			<a href="#" class="easyui-menubutton" menu="#menu_db" iconCls="icon-db_config">数据管理</a>
