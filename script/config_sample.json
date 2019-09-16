@@ -7,6 +7,7 @@
         "passwd": "root",
         "charset": "utf8"
     },
+    "sqldump_path": "/usr/local/mysql/bin/mysqldump",
     "mailbox": {
         "exclude": [
             "\"Drafts\"",
@@ -14,5 +15,15 @@
         ],
         "address": "admin@mailbox.com",
         "admin": "AdminName"
+    },
+    "ftp": {
+        "sftp": false,
+        "days_saved": 15,
+        "host": "ftp.yourhost.com",
+        "local_file": "~/backup/mycrm.sql",
+        "port": 21,
+        "user": "username",
+        "passwd": "password",
+        "remote_file": "/backup/mycrm-%Y%m%d.sql"
     }
 }
