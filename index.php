@@ -188,6 +188,20 @@
 								});
 							}});
 						}
+					}else if(item.text=="数据库自动备份日志"){
+						title="数据库备份日志";
+						if ($('#main_tabs').tabs('exists', title)){
+							$('#main_tabs').tabs('select',title);
+						} else {
+							$.ajax({url:"script/backup_database.log",success:function(result){
+								$('#main_tabs').tabs('add',{
+									title:title,
+									content:html2Escape(result),
+									closable:true,
+									iconCls:'icon-log'
+								});
+							}});
+						}
 					}
               	}
 			});
@@ -727,6 +741,7 @@
 			<div class="menu-sep"></div>
 			<div iconCls="icon-log">客户邮箱有效性检查日志</div>
 			<div iconCls="icon-log">邮箱近期邮件的监控日志</div>
+			<div iconCls="icon-log">数据库自动备份日志</div>
 		</div>
 		<div id="menu_setting" style="width:100px;">
 			<div iconCls="icon-property">参数设置</div>
