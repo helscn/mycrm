@@ -5,7 +5,6 @@ import subprocess
 import time
 import json
 import sys
-import pysftp
 import logging
 from os.path import join,split,realpath
 from datetime import datetime,timedelta
@@ -30,14 +29,14 @@ config={
         "passwd":"@sf#8024",
         "local_file":"/volume1/script/mycrm.sql",
         "remote_file":"backup/mycrm-%Y%m%d.sql",
-        "days_saved":15,
-        "sftp":0
+        "days_saved":10,
+        "sftp":False
     }
 }
 
-
 # Logger的配置设置, log_file 为logger的输出文件路径
 log_file=join(split(realpath(__file__))[0],'backup_database.log')
+
 logging.basicConfig(
     handlers=[logging.FileHandler(encoding='utf-8', mode='a', filename=log_file)],
     format='[%(asctime)s] %(levelname)s: %(message)s',
@@ -58,7 +57,6 @@ try:
 except Exception as e:
     logger.error('无法读取json文件中的配置信息，使用默认配置运行。')
     sys.stderr.write('Can not import the config of json file.\n')
-config['ftp']['sftp']=True if config['ftp']['sftp'] else False
 
 # 将配置写入json文件
 try:
@@ -69,12 +67,12 @@ except Exception as e:
     logger.error('将配置信息保存至json文件时出现错误！')
     sys.stderr.write('Can not save the config to json file.\n')
 
-
-def connect_ftp(host,port,user,passwd,sftp=True,**kargs):
+def connect_ftp(host,port,user,passwd,sftp=False,**kargs):
     Max_Retry_Count = 3     # 最大重连次数
     Retry_Delay = 10        # 重连时的延迟时间
     retry_count = 0         # 当前重连计数
     if sftp:
+        import pysftp
         cnopts=pysftp.CnOpts()
         cnopts.hostkeys=None
         while True:
@@ -110,24 +108,21 @@ def connect_ftp(host,port,user,passwd,sftp=True,**kargs):
                 time.sleep(Retry_Delay)
                 continue
             break
+
     logger.debug('连接FTP服务器成功！')
     return ftp
 
 def uploadFile(ftp,localPath,remotePath):
     try:
-        if type(ftp) is pysftp.Connection:
-            remote_path,remote_name=split(remotePath)
-            if remote_path:
-                #如果不存在则创建ftp目录
-                if not ftp.isdir(remote_path):
-                    logger.info('FTP服务器上文件夹不存在，正在创建文件夹：%s',remote_path)
-                    ftp.makedirs(remote_path)
-            logger.debug('正在上传文件...')
-            ftp.put(localpath=localPath,remotepath=remotePath,preserve_mtime=True)
-        else:
-            #如果不存在则创建ftp目录
+        if type(ftp) is FTP:
             dirs = str(remotePath).split("/")
-            curdir=""
+            current_dir=ftp.pwd()
+            if dirs[0]=='':     # Absolute address
+                curdir=''
+            else:
+                curdir=current_dir
+            if curdir=='/':
+                curdir=''
             for i,d in enumerate(dirs):
                 if(i==len(dirs)-1):
                     break
@@ -138,25 +133,31 @@ def uploadFile(ftp,localPath,remotePath):
                     logger.info('FTP服务器上文件夹不存在，正在创建文件夹：%s',curdir)
                     ftp.mkd(curdir)
 
-            ftp.cwd("/")
+            ftp.cwd(current_dir)
             bufsize=8192
             with open(localPath,"rb") as f:
                 logger.debug('正在上传文件...')
                 ftp.storbinary("STOR %s" % remotePath,f,bufsize)
-            return True
+        else:
+            remote_path,remote_name=split(remotePath)
+            if remote_path:
+                if not ftp.isdir(remote_path):
+                    logger.info('FTP服务器上文件夹不存在，正在创建文件夹：%s',remote_path)
+                    ftp.makedirs(remote_path)
+            logger.debug('正在上传文件...')
+            ftp.put(localpath=localPath,remotepath=remotePath,preserve_mtime=True)
     except Exception as e:
         logger.error('上传文件至FTP服务器出现错误上传失败！')
         raise e
     
 def downloadFile(ftp,remotePath,localPath):
     try:
-        if type(ftp) is pysftp.Connection:
-            ftp.get(remotepath=remotePath,localpath=localPath,preserve_mtime=True)
-        else:
+        if type(ftp) is FTP:
             bufsize=8192
             with open(localPath,"wb") as f:
                 ftp.retrbinary("RETR %s" % remotePath,f.write,bufsize)
-            return True
+        else:
+            ftp.get(remotepath=remotePath,localpath=localPath,preserve_mtime=True)
     except Exception as e:
         logger.error('下载文件出现错误: %s', e)
         raise e
@@ -173,7 +174,7 @@ if __name__ == '__main__':
         remote_file=config['ftp']['remote_file']
         remote_path,remote_name=split(remote_file)
         remote_path=today.strftime(remote_path)
-        remote_file=join(remote_path,today.strftime(remote_name))
+        remote_file=remote_path+'/'+today.strftime(remote_name)
 
         # 导出Database数据至备份文件中
         logger.debug('正在导出 %s 数据库中的数据至备份文件中...',config['db']['db'])
@@ -189,13 +190,13 @@ if __name__ == '__main__':
         logger.debug('远程FTP服务器备份文件路径：%s',remote_file)
         if config['ftp']['sftp']:
             for name in ftp.listdir(remote_path):
-                if ftp.isfile(join(remote_path,name)):
+                if ftp.isfile(remote_path+'/'+name):
                     try:
                         d=datetime.strptime(name,remote_name).date()
                         if d < (today-timedelta(days=config['ftp']['days_saved'])).date():
                             try:
                                 logger.info('正在删除FTP服务器上的过期备份文件：%s',name)
-                                ftp.remove(join(remote_path,name))
+                                ftp.remove(remote_path+'/'+name)
                             except Exception as e:
                                 logger.error('删除FTP服务器上的过期备份文件出现错误!')
                     except Exception as e:
@@ -209,7 +210,7 @@ if __name__ == '__main__':
                         if d < (today-timedelta(days=config['ftp']['days_saved'])).date():
                             try:
                                 logger.info('正在删除FTP服务器上的过期备份文件：%s',name)
-                                ftp.delete(join(remote_path,name))
+                                ftp.delete(remote_path+'/'+name)
                             except Exception as e:
                                 logger.error('删除FTP服务器上的过期备份文件出现错误!')
                     except Exception as e:
@@ -220,11 +221,11 @@ if __name__ == '__main__':
         uploadFile(ftp,local_file,remote_file)
 
         # 关闭FTP连接
-        logger.info('数据库数据备份完成。')
-        if type(ftp) is pysftp.Connection:
-            ftp.close()
-        else:
+        if type(ftp) is FTP:
             ftp.quit()
+        else:
+            ftp.close()
+        logger.info('数据库数据备份完成。')
     except Exception as e:
         logger.error('程序运行错误: %s',e)
         logger.critical('程序异常停止!',exc_info=True)
