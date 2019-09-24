@@ -18,7 +18,7 @@
     },
     "ftp": {
         "sftp": false,
-        "days_saved": 15,
+        "days_saved": 10,
         "host": "ftp.yourhost.com",
         "local_file": "~/backup/mycrm.sql",
         "port": 21,
