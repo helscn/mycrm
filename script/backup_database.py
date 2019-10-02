@@ -193,7 +193,7 @@ if __name__ == '__main__':
                 if ftp.isfile(remote_path+'/'+name):
                     try:
                         d=datetime.strptime(name,remote_name).date()
-                        if d < (today-timedelta(days=config['ftp']['days_saved'])).date():
+                        if d <= (today-timedelta(days=config['ftp']['days_saved'])).date():
                             try:
                                 logger.info('正在删除FTP服务器上的过期备份文件：%s',name)
                                 ftp.remove(remote_path+'/'+name)
