@@ -47,7 +47,7 @@ json_file=join(split(realpath(__file__))[0],'config.json')
 log_file=join(split(realpath(__file__))[0],'fetch_mail.log')
 logger = logging.getLogger('FetchMail')
 logging.basicConfig(
-    handlers=[logging.FileHandler(encoding='utf-8', mode='a', filename=log_file)],
+    handlers=[logging.FileHandler(encoding='utf-8', mode='a', filename=log_file) ,logging.StreamHandler()],
     format='[%(asctime)s] %(levelname)s: %(message)s',
     datefmt='%Y/%m/%d %H:%M:%S',
     level=logging.INFO
