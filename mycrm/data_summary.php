@@ -25,7 +25,7 @@ if($_REQUEST['type']=='importance'){
     $sender=array();
     $receive=array();
     $categories=array();
-    $sql="SELECT date_format(date,'%YW%u') as week,sum(case when type='sendto' then 1 else 0 end) as sendto,sum(case when type='receive' then 1 else 0 end) as receive FROM messages GROUP BY week ORDER BY week LIMIT 0,53";
+    $sql="SELECT * FROM (SELECT date_format(date,'%YW%u') as week,sum(case when type='sendto' then 1 else 0 end) as sendto,sum(case when type='receive' then 1 else 0 end) as receive FROM messages GROUP BY week ORDER BY week DESC LIMIT 0,20) AS msgs ORDER BY week";
     $rs = mysqli_query($conn,$sql);
     while($row = mysqli_fetch_object($rs)){
         array_push($categories,$row->week);
