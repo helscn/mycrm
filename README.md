@@ -47,7 +47,7 @@
 ## 使用说明
 
 ### 运行环境配置
- 
+
 - PHP7.0
 - MariaDB10 （也可以使用MySql）
 - Python3.5
@@ -312,12 +312,14 @@ README.md                               // README帮助说明文件
 |followup_importance_operators|客户跟进提醒评级的比较运算符，可以为`=`、`>`、`>=`|
 |followup_importance|客户跟进提醒的客户评级|
 |monitor_mail_days|跟踪获取多少天内与客户的来往邮件|
-|theme|设置的外观主题名称|
 |mail_checked_date|程序上次运行检查邮件的时间|
 |mail_host|邮箱服务器地址|
 |mail_port|邮件服务器使用SSL连接的端口号|
 |mail_username|邮箱账号用户名|
 |mail_password|邮箱账号密码|
+|mail_reserved_days|将邮箱中邮件缓存在数据库中的最长保存天数|
+|theme|设置的外观主题名称|
+|woocommerce_api|设置网上Wordpress Woocommerce商店访问授权的Key和Secrect|
 
 ### customers 表
 
@@ -325,10 +327,10 @@ README.md                               // README帮助说明文件
 
 |字段名|类型|说明|
 |------|------|------|
-|id| int unsigned primary key|记录ID编号|
+|id| int(11) unsigned primary key |记录ID编号|
 |name|varchar(128)|客户姓名|
 |email|varchar(256)|客户邮件地址|
-|importance|tinyint unsigned|客户评级，值为0-5|
+|importance|tinyint(3) unsigned|客户评级，值为0-5|
 |company|varchar(128)|客户的公司名|
 |country|varchar(30)|客户所在国家|
 |address|varchar(256)|客户地址|
@@ -337,6 +339,7 @@ README.md                               // README帮助说明文件
 |comment|varchar(512)|自定义的备注信息|
 |last_contact_date|datetime|最近一次联系客户的时间，由后台程序自动更新|
 |last_checked_date|datetime|上次检查邮件地址有效性的时间，由 `verify_mail.py` 脚本自动更新|
+|last_checked_log|varchar(256)|上次检查邮件地址有效性时返回的检查结果，由`verify_mail.py`脚本自动更新|
 |valid|tinyint unsigned|客户邮箱是否有效，由 `verify_mail.py` 脚本自动更新，值为0代表无效地址，1代表有效地址，2代表未确认地址|
 
 ### messages 表
@@ -345,12 +348,12 @@ README.md                               // README帮助说明文件
 
 |字段名|类型|说明|
 |------|------|------|
-| id | int unsigned primary key | 记录ID编号 |
+| id | int(11) unsigned primary key | 记录ID编号 |
 |sender|varchar(256)|发件人名称|
 |date|datetime|邮件发送/接收时间|
 |type|enum('receive','sendto','comment','system')|当前消息记录的类型|
 |subject|vchar(256)|邮件的主题|
-|content|text|邮件内容|
+|content|longtext|邮件内容|
 
 - 消息记录的 `type` 类型包括以下四种：
   1. **receive** : 表示此消息为收到的客户邮件消息
@@ -362,6 +365,6 @@ README.md                               // README帮助说明文件
 
 |字段名|类型|说明|
 |------|------|------|
-| id | int unsigned primary key | 记录ID编号 |
-|msg_id| int unsigned| `Foreign Key` 项，表示 `messages` 表中的ID编号|
+| id | int(11) unsigned primary key | 记录ID编号 |
+|msg_id| int(11) unsigned | `Foreign Key` 项，表示 `messages` 表中的ID编号|
 |address|varchar(256)|发件或收件人的邮箱地址，表示 `messages` 表中的消息哪些人可以看得到 |
