@@ -233,7 +233,7 @@ README.md                               // README帮助说明文件
         "user": "username",							// 连接FTP服务器的用户名
         "passwd": "password",						// 连接FTP服务器的密码
         "local_file": "~/backup/mycrm.sql",			// 数据库备份的本地导出文件路径
-        "remote_file": "/backup/mycrm-%Y%m%d.sql",	// 数据库在FTP服务器上的远程保存路径，%Y%m%d表示按年月日命名
+        "remote_file": "/backup/mycrm-%Y%m%d.zip",	// 数据库在FTP服务器上的远程保存路径，%Y%m%d表示按年月日命名
         "days_saved": 10							// 远程备份的最长保存期限，超过此天数的备份会自动删除
     },
     "sqldump_path": "/usr/local/mysql/bin/mysqldump"  // mysqldump程序的完整路径

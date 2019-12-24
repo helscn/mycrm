@@ -24,6 +24,6 @@
         "port": 21,
         "user": "username",
         "passwd": "password",
-        "remote_file": "/backup/mycrm-%Y%m%d.sql"
+        "remote_file": "/backup/mycrm-%Y%m%d.zip"
     }
 }

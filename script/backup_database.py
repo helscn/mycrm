@@ -4,6 +4,7 @@
 import subprocess
 import time
 import json
+import zipfile
 import sys
 import logging
 from os.path import join,split,realpath
@@ -28,7 +29,7 @@ config={
         "user":"dtntechc",
         "passwd":"@sf#8024",
         "local_file":"/volume1/script/mycrm.sql",
-        "remote_file":"backup/mycrm-%Y%m%d.sql",
+        "remote_file":"backup/mycrm-%Y%m%d.zip",
         "days_saved":10,
         "sftp":False
     }
@@ -170,6 +171,7 @@ if __name__ == '__main__':
         # 获取Database备份文件名
         local_file=config['ftp']['local_file']
         local_file=today.strftime(local_file)
+        local_zip_file=local_file + '.zip'
         logger.debug('本地数据库备份文件路径：%s',local_file)
         remote_file=config['ftp']['remote_file']
         remote_path,remote_name=split(remote_file)
@@ -182,6 +184,11 @@ if __name__ == '__main__':
         sqldump=sqldump.format(**config['db']).split(' ')
         with open(local_file,'w') as f:
             subprocess.check_call(sqldump, stdout=f)
+
+        # 将本地备份的数据文件进行压缩
+        logger.debug('正在将数据压缩至ZIP文件：%s ...',local_zip_file)
+        with zipfile.ZipFile(local_zip_file,'w',compression=zipfile.ZIP_DEFLATED ) as z:
+            z.write(local_file)
 
         # 连接FTP服务器
         ftp=connect_ftp(**config['ftp'])
@@ -218,7 +225,7 @@ if __name__ == '__main__':
 
         # 上传Database备份文件至FTP服务器
         logger.debug('正在上传备份文件至FTP服务器中...')
-        uploadFile(ftp,local_file,remote_file)
+        uploadFile(ftp,local_zip_file,remote_file)
 
         # 关闭FTP连接
         if type(ftp) is FTP:
